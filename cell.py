@@ -3,8 +3,8 @@ from coordinates import Coordinates
 from points import InputPoint, Outputpoint
 
 class Cell():
-    def __init__(self, cell_row, cell_col, cell_type, number_of_pheromone):
-        self.__pheromone_life_time = 1
+    def __init__(self, cell_row, cell_col, cell_type, number_of_pheromone, life_time):
+        self.__pheromone_life_time = life_time
         self.__coordinates = Coordinates(cell_row, cell_col)
         self.__type = cell_type
         self.__point_direction = -1

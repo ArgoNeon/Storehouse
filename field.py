@@ -3,7 +3,8 @@ from coordinates import Coordinates
 from cell import Cell
 
 class Field():
-    def __init__(self, field_file_name):
+    def __init__(self, field_file_name, life_time):
+        self.__cell_life_time = life_time
         field = rd.read_field(field_file_name)
 
         max_row = len(field)
@@ -50,7 +51,7 @@ class Field():
         for i in range(max_row):
             row = []
             for j in range(max_col):
-                cell = Cell(i, j, field[i][j], self.__number_of_pheromones)
+                cell = Cell(i, j, field[i][j], self.__number_of_pheromones, self.__cell_life_time)
                 row.append(cell)
             self.__cells_list.append(row)
 
@@ -119,7 +120,7 @@ class Field():
     def getCellPheromoneList(self, cell_row, cell_col):
         return self.__cells_list[cell_row][cell_col].getPheromoneList()
 
-    def getCellPheromone(self, cell_row, cell_col, number_of_pheromone):
+    def getCellPheromoneValue(self, cell_row, cell_col, number_of_pheromone):
         return self.__cells_list[cell_row][cell_col].getPheromone(number_of_pheromone)
 
     def getCellPointDirection(self, cell_row, cell_col):

@@ -7,9 +7,10 @@ from cell import Cell
 from xlsx_reader import write_field
 
 class Robot():
-    def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone):
-        self.__pheromone_life_time = 20
-        self.__pheromone_value = 1.0
+    def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone, life_time):
+        self.__pheromone_life_time = life_time
+        self.__pheromone_value = 100.0
+        self.__base_pheromone_value = 1.0
 
         self.__id = robot_id
         self.__coordinates = Coordinates(robot_row, robot_col)
@@ -58,8 +59,11 @@ class Robot():
     def stopWait(self):
         self.__is_wait = 0
 
-    def getPheromoneValue(self):
-        return self.__pheromone_value
+    def getCurrentPheromoneValue(self):
+        return self.__pheromone_list[self.__current_pheromone]
+
+    def getPheromoneValue(self, pheromone_id):
+        return self.__pheromone_list[pheromone_id]
 
     def isHold(self):
         return self.__is_hold
@@ -99,9 +103,16 @@ class Robot():
 
         return self.__new_direction, self.__new_coordinates.getCoordinates() 
 
+    def sumCurrentPheromoneAround(self):
+        summ = 0
+        for i in range(len(self.__current_pheromone_around)):
+            summ = summ + self.__current_pheromone_around[i]
+
+        return summ
+
     def chooseDirection(self):
         new_direction = rand.choices(range(4), weights=self.__current_pheromone_around)
-        self.__new_direction = new_direction[0]
+        self.__new_direction = new_direction[0]        
 
         if (self.__new_direction == 0):
             self.__new_coordinates.setCoordinates(self.__coordinates.getRow() - 1, self.__coordinates.getCol())
@@ -145,8 +156,9 @@ class Robot():
         else:
             self.__current_pheromone = self.__number_of_pheromone - 1
 
-    def setMail(self, mail):
+    def receiveMail(self, mail):
         self.__mail = mail
+        self.__pheromone_list[self.__current_pheromone] = self.__pheromone_value
 
     def getMail(self):
         return self.__mail
@@ -154,6 +166,7 @@ class Robot():
     def putMail(self):
         mail = self.__mail
         self.__mail = None
+        self.__pheromone_list[self.__current_pheromone] = self.__pheromone_value
         return mail
 
     def getMailDirection(self):
@@ -204,7 +217,6 @@ class Robot():
 
     def setNewCoordinates(self, robot_row, robot_col):
         self.__new_coordinates.setCoordinates(robot_row, robot_col)
-        self.__is_hold = 0
 
     def setID(self, new_id):
         self.__id = new_id
@@ -231,8 +243,8 @@ class Robot():
         return self.__pheromone_list    
 
     def updatePheromoneList(self):
-        for ipheromone in self.__pheromone_list:
-            ipheromone = (ipheromone - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
+        for i in range(len(self.__pheromone_list)):
+            self.__pheromone_list[i] = (self.__pheromone_list[i] - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
 
     def changePheromoneList(self, pheromone_id, pheromone_data):
         self.__pheromone_list[pheromone_id] = pheromone_data
