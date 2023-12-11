@@ -10,6 +10,12 @@ class InputPoint():
         self.__number_of_mails = number_of_mails
         self.__mail_directions = range(number_of_output_points)
 
+        if (self.__number_of_mails > 0):
+            mail_direction = rand.choices(self.__mail_directions)
+            self.__current_mail = Mail(mail_direction[0])
+        else:
+            self.__current_mail = None
+
     def getID(self):
         return self.__id
 
@@ -27,7 +33,8 @@ class InputPoint():
 
     def newMail(self):
         if (self.__number_of_mails > 0):
-            self.__current_mail = Mail(rand.choices(self.__mail_directions))
+            mail_direction = rand.choices(self.__mail_directions)
+            self.__current_mail = Mail(mail_direction[0])
         else:
             self.__current_mail = None
 

@@ -1,14 +1,17 @@
 import math
-from coordinates import Coordinatess
+from coordinates import Coordinates
+from points import InputPoint, Outputpoint
 
 class Cell():
     def __init__(self, cell_row, cell_col, cell_type, number_of_pheromone):
-        self.__pheromone_life_time = 10
+        self.__pheromone_life_time = 1
         self.__coordinates = Coordinates(cell_row, cell_col)
         self.__type = cell_type
         self.__point_direction = -1
         self.__mail_direction = -1
         self.__robot = None
+        self.__input_point = None
+        self.__output_point = None
 
         self.__is_robot = 0
         self.__is_reserved = 0
@@ -35,6 +38,30 @@ class Cell():
         else:
             for i in range(number_of_pheromone):
                 self.__pheromone_list.append(0.0)
+
+    def getMailDirectionForOutputPoint(self):
+        return self.__output_point.getMailDirection()
+
+    def getNumberOfReceivedMailsForOutputPoint(self):
+        return self.__output_point.getNumberOfReceivedMails()
+
+    def getNumberOfMailsForInputPoint(self):
+        return self.__input_point.getNumberOfMails()
+
+    def newMailForInputPoint(self):
+        self.__input_point.newMail()
+
+    def giveMailForInputPoint(self):
+        return self.__input_point.giveMail()
+
+    def receiveMailForOutputPoint(self, mail):
+        self.__output_point.receiveMail(mail)
+
+    def setInputPoint(self, input_point):
+        self.__input_point = input_point
+
+    def setOutputPoint(self, output_point):
+        self.__output_point = output_point
 
     def getMailDirection(self):
         return self.__mail_direction
@@ -85,8 +112,9 @@ class Cell():
         return  self.__pheromone_list[number_of_pheromone]
 
     def updatePheromoneList(self):
-        for ipheromone in __pheromone_list:
-            ipheromone = (ipheromone - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
+        for i in range(len(self.__pheromone_list)):
+            if (self.__type != 'b'):
+                self.__pheromone_list[i] = (self.__pheromone_list[i] - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
 
     def addPheromone(self, pheromone_id, pheromone_data):
         self.__pheromone_list[pheromone_id] = self.__pheromone_list[pheromone_id] + pheromone_data

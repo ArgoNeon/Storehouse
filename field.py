@@ -103,8 +103,9 @@ class Field():
         self.__cells_list[cell_row][cell_col].removeRobot()
 
     def updateCellsPheromones(self):
-        for icell in self.__cells_list:
-            icell.updatePheromoneList()
+        for irow in self.__cells_list:
+            for icell in irow:
+                icell.updatePheromoneList()
 
     def getCellType(self, cell_row, cell_col):
         return self.__cells_list[cell_row][cell_col].getType()
@@ -124,8 +125,34 @@ class Field():
     def getCellPointDirection(self, cell_row, cell_col):
         return self.__cells_list[cell_row][cell_col].getPointDirection()
 
+
     def getCellMailDirection(self, cell_row, cell_col):
         return self.__cells_list[cell_row][cell_col].getMailDirection()
 
     def setCellMailDirection(self, cell_row, cell_col, mail_direction):
-        return self.__cells_list[cell_row][cell_col].setMailDirection(mail_direction)
+        self.__cells_list[cell_row][cell_col].setMailDirection(mail_direction)
+
+
+    def giveCellMailForInputPoint(self, cell_row, cell_col):
+        return self.__cells_list[cell_row][cell_col].giveMailForInputPoint()
+
+    def receiveCellMailForOutputPoint(self, cell_row, cell_col, mail):
+        self.__cells_list[cell_row][cell_col].receiveMailForOutputPoint(mail)
+
+    def setCellInputPoint(self, cell_row, cell_col, input_point):
+        self.__cells_list[cell_row][cell_col].setInputPoint(input_point)
+
+    def setCellOutputPoint(self, cell_row, cell_col, output_point):
+        self.__cells_list[cell_row][cell_col].setOutputPoint(output_point)
+
+    def getCellMailDirectionForOutputPoint(self, cell_row, cell_col):
+        return self.__cells_list[cell_row][cell_col].getMailDirectionForOutputPoint()
+
+    def getCellNumberOfReceivedMailsForOutputPoint(self, cell_row, cell_col):
+        return self.__cells_list[cell_row][cell_col].getNumberOfReceivedMailsForOutputPoint()
+
+    def getCellNumberOfMailsForInputPoint(self, cell_row, cell_col):
+        return self.__cells_list[cell_row][cell_col].getNumberOfMailsForInputPoint()
+
+    def newCellMailForInputPoint(self, cell_row, cell_col):
+        self.__cells_list[cell_row][cell_col].newMailForInputPoint()

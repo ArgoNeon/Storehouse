@@ -1,11 +1,14 @@
 import random as rand
+import math
+
 from coordinates import Coordinates
 from mail import Mail
 from cell import Cell
+from xlsx_reader import write_field
 
 class Robot():
     def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone):
-        self.__pheromone_life_time = 5
+        self.__pheromone_life_time = 20
         self.__pheromone_value = 1.0
 
         self.__id = robot_id
@@ -17,21 +20,43 @@ class Robot():
 
         self.__number_of_pheromone = number_of_pheromone
         self.__current_pheromone = number_of_pheromone - 1
-        self.__current_pheromone_around = [1.0, 1.0, 1.0, 1.0]
+        self.__current_pheromone_around = []
+        self.__current_cell_types_around = []
 
         self.__mail = None 
         
         self.__is_hold = 1
         self.__is_rotate = 0
+        self.__is_wait = 0
         self.__is_charge = 0
+        self.__is_done = 0
 
         self.is_search_input = 0
         self.is_search_output = 0
 
         self.__pheromone_list = []
+        self.__cell_type_list = []
 
         for i in range(number_of_pheromone):
             self.__pheromone_list.append(1.0)
+
+    def wellDone(self):
+        self.__is_done = 1
+
+    def isDone(self):
+        return self.__is_done
+
+    def isMail(self):
+        return (self.__mail != None)
+
+    def isWait(self):
+        return self.__is_wait
+
+    def startWait(self):
+        self.__is_wait = 1
+
+    def stopWait(self):
+        self.__is_wait = 0
 
     def getPheromoneValue(self):
         return self.__pheromone_value
@@ -42,11 +67,17 @@ class Robot():
     def startHold(self):
         self.__is_hold = 1
 
-    def startProcess(self):
+    def stopHold(self):
         self.__is_hold = 0
 
     def isRotate(self):
         return self.__is_rotate
+
+    def checkRotate(self):
+        return self.__direction != self.__new_direction
+
+    def checkHold(self):
+        return self.__coordinates != self.__new_coordinates
 
     def startRotate(self):
         self.__is_rotate = 1
@@ -69,7 +100,8 @@ class Robot():
         return self.__new_direction, self.__new_coordinates.getCoordinates() 
 
     def chooseDirection(self):
-        self.__new_direction = rand.choices([0, 1, 2, 3], weights=self.__current_pheromone_around)
+        new_direction = rand.choices(range(4), weights=self.__current_pheromone_around)
+        self.__new_direction = new_direction[0]
 
         if (self.__new_direction == 0):
             self.__new_coordinates.setCoordinates(self.__coordinates.getRow() - 1, self.__coordinates.getCol())
@@ -80,7 +112,9 @@ class Robot():
         if (self.__new_direction == 3):
             self.__new_coordinates.setCoordinates(self.__coordinates.getRow(), self.__coordinates.getCol() - 1)
 
-        return self.__new_direction, self.__new_coordinates.getCoordinates() 
+        new_row, new_col = self.__new_coordinates.getCoordinates() 
+
+        return self.__new_direction, new_row, new_col
 
     def getCurrentPheromoneAround(self):
         return self.__current_pheromone_around
@@ -91,6 +125,13 @@ class Robot():
     def updateCurrentPheromonesAround(self, pheromone_up, pheromone_right, pheromone_down, pheromone_left):
         self.__current_pheromone_around.clear()
         self.__current_pheromone_around = [pheromone_up, pheromone_right, pheromone_down, pheromone_left]
+
+    def updateCellTypeAround(self, direction, cell_type):
+        self.__current_cell_types_around[direction] = cell_type
+
+    def updateCellTypesAround(self, cell_type_up, cell_type_right, cell_type_down, cell_type_left):
+        self.__current_cell_types_around.clear()
+        self.__current_cell_types_around = [cell_type_up, cell_type_right, cell_type_down, cell_type_left]
 
     def getCurrentPheromone(self):
         return self.__current_pheromone
@@ -104,11 +145,19 @@ class Robot():
         else:
             self.__current_pheromone = self.__number_of_pheromone - 1
 
-    def getMail(self, mail):
+    def setMail(self, mail):
         self.__mail = mail
 
+    def getMail(self):
+        return self.__mail
+
     def putMail(self):
+        mail = self.__mail
         self.__mail = None
+        return mail
+
+    def getMailDirection(self):
+        return self.__mail.getMailDirection()
 
     def getID(self):
         return self.__id
@@ -137,7 +186,7 @@ class Robot():
         pass
 
     def Move(self):
-        self.startProcess()
+        self.stopHold()
         if (self.__direction == 0):
             self.__coordinates.setCoordinates(self.__coordinates.getRow() - 1, self.__coordinates.getCol())
         if (self.__direction == 1):
@@ -155,6 +204,7 @@ class Robot():
 
     def setNewCoordinates(self, robot_row, robot_col):
         self.__new_coordinates.setCoordinates(robot_row, robot_col)
+        self.__is_hold = 0
 
     def setID(self, new_id):
         self.__id = new_id
@@ -164,28 +214,24 @@ class Robot():
 
     def setNewDirection(self, new_direction):
         self.__new_direction  = new_direction
+        self.__is_rotate = 1
 
     def changeDirection(self):
-        if (self.__new_direction != self.__direction):
-            self.startProcess()
-            self.startRotate()
-            if ((self.__new_direction - self.__direction) % 4 < 3):
-                self.RotateRight()
-            else:
-                self.RotateLeft()
-
-            if (self.__new_direction == self.__direction):
-                self.stopRotate()
-                self.startHold()
+        if (((self.__new_direction - self.__direction) % 4) < 3):
+            self.RotateRight()
         else:
+            self.RotateLeft()
+
+        if (not self.checkRotate()):
             self.stopRotate()
-            self.startHold()
+
+        return self.__direction
     
     def getPheromoneList(self):
         return self.__pheromone_list    
 
     def updatePheromoneList(self):
-        for ipheromone in __pheromone_list:
+        for ipheromone in self.__pheromone_list:
             ipheromone = (ipheromone - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
 
     def changePheromoneList(self, pheromone_id, pheromone_data):
