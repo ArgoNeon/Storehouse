@@ -287,7 +287,7 @@ class Model():
 
         return self.getTick()                        
 if __name__ == "__main__":
-    it = 5
+    '''it = 5
     number_of_mails = 100
     medium_robot_life = 10
     max_robot_life_time = 20
@@ -326,11 +326,14 @@ if __name__ == "__main__":
 
     plt.figure(figsize=[16, 9])
     plt.plot(x_robot, y_robot, color="green")
-    plt.show()
-    #model = Model('field.xlsx', number_of_mails, robot_life_time, cell_life_time)
-    #tick = model.run()
+    plt.show()'''
+    number_of_mails = 100
+    optimal_robot_life_time = 5
+    optimal_cell_life_time = 300
+    model = Model('field.xlsx', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
+    tick = model.run()
     xlsx_reader.write_field('current_field.xlsx', model.field.getCellsList())
-    #print('Number of ticks: ', tick)
-    #print('Number of mails: ', number_of_mails)
-    #print('Robot life time: ', robot_life_time)
-    #print('Cell life time: ', cell_life_time)
+    print('Number of ticks: ', tick)
+    print('Number of mails: ', number_of_mails)
+    print('Robot life time: ', optimal_robot_life_time)
+    print('Cell life time: ', optimal_cell_life_time)
