@@ -1,6 +1,7 @@
 import logging as log
 import random as rand
 import matplotlib.pyplot as plt
+import math
 
 import xlsx_reader
 from field import Field
@@ -115,7 +116,9 @@ class Model():
             robot.updateCurrentPheromoneAround(3, 0.0)
 
         if (robot.sumCurrentPheromoneAround() == 0.0):
+            robot_row, robot_col = robot.getCoordinates()
             #print('Stuck')
+            log.info('Robot on ' + str(robot_row) + ' row,' + str(robot_col) + ' col wait.')
             robot.startWait()
 
             return robot_direction, robot_row, robot_col
@@ -285,7 +288,7 @@ class Model():
                         else:
                             pass
 
-        return self.getTick()                        
+        return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     '''it = 5
     number_of_mails = 100
@@ -327,13 +330,37 @@ if __name__ == "__main__":
     plt.figure(figsize=[16, 9])
     plt.plot(x_robot, y_robot, color="green")
     plt.show()'''
+    number_of_it = 5
     number_of_mails = 100
     optimal_robot_life_time = 5
     optimal_cell_life_time = 300
-    model = Model('field.xlsx', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
-    tick = model.run()
-    xlsx_reader.write_field('current_field.xlsx', model.field.getCellsList())
-    print('Number of ticks: ', tick)
-    print('Number of mails: ', number_of_mails)
+    tick_sum = 0
+    tick_list = []
+    metric_list = []
+
+    for i in range(number_of_it):
+        model = Model('field.xlsx', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
+        tick, number_of_robots, number_of_delivered_mails = model.run()
+        tick_sum = tick_sum + tick
+        tick_list.append(tick)
+        metric = tick * number_of_robots / number_of_delivered_mails
+        metric_list.append(metric)
+
+    #xlsx_reader.write_field('current_field.xlsx', model.field.getCellsList())
+    medium_tick = tick_sum / number_of_it
+    metric_value = medium_tick * number_of_robots / number_of_delivered_mails
+
+    for i in range(number_of_it):
+        square_sum = (metric_list[i] - metric_value)**2
+
+    dispertion = math.sqrt(square_sum / (number_of_it - 1))
+
+    print('Medium number of ticks: ', medium_tick)
+    print('Number of robots: ', number_of_robots)
+    print('Number of delivered mails: ', number_of_delivered_mails)
+
+    print('Metric value: ', metric_value)
+    print('Dispertion: ', dispertion)
+
     print('Robot life time: ', optimal_robot_life_time)
     print('Cell life time: ', optimal_cell_life_time)
