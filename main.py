@@ -154,13 +154,14 @@ class Model():
         old_row, old_col = robot.getCoordinates()
         new_row, new_col = robot.getNewCoordinates()
         self.field.cellSetReserved(new_row, new_col)
+        self.robotAddPheromone(robot)
         robot.stopHold()
         current_row, current_col = robot.Move()
         robot.startHold()
         self.field.cellSetRobot(current_row, current_col)
         self.field.cellRemoveRobot(old_row, old_col)
         self.field.cellRemoveReserved(new_row, new_col)
-        self.robotAddPheromone(robot)
+        #self.robot heromone(robot)
 
         return current_row, current_col
 
@@ -307,7 +308,7 @@ class Model():
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     number_of_it = 1
-    number_of_mails = 10000
+    number_of_mails = 100
     optimal_robot_life_time = 7
     optimal_cell_life_time = 2400
     tick_sum = 0
