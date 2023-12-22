@@ -9,8 +9,8 @@ from xlsx_reader import write_field
 class Robot():
     def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone, life_time):
         self.__pheromone_life_time = life_time
-        self.__pheromone_value = 100.0
-        self.__base_pheromone_value = 1.0
+        self.__pheromone_value = 20.0
+        self.__base_pheromone_value = 0.0
 
         self.__id = robot_id
         self.__coordinates = Coordinates(robot_row, robot_col)
@@ -39,7 +39,7 @@ class Robot():
         self.__cell_type_list = []
 
         for i in range(number_of_pheromone):
-            self.__pheromone_list.append(1.0)
+            self.__pheromone_list.append(0.0)
 
     def wellDone(self):
         self.__is_done = 1
@@ -244,7 +244,10 @@ class Robot():
 
     def updatePheromoneList(self):
         for i in range(len(self.__pheromone_list)):
-            self.__pheromone_list[i] = (self.__pheromone_list[i] - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
+            self.__pheromone_list[i] = self.__pheromone_list[i] * math.exp(- 1.0 / self.__pheromone_life_time)
 
-    def changePheromoneList(self, pheromone_id, pheromone_data):
-        self.__pheromone_list[pheromone_id] = pheromone_data
+    def changePheromoneListForOutputPoint(self, point_id):
+        self.__pheromone_list[point_id] = self.__pheromone_value
+
+    def changePheromoneListForInputPoint(self):
+        self.__pheromone_list[self.__number_of_pheromone - 1] = self.__pheromone_value

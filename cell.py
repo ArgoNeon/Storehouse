@@ -8,7 +8,6 @@ class Cell():
         self.__coordinates = Coordinates(cell_row, cell_col)
         self.__type = cell_type
         self.__point_direction = -1
-        self.__mail_direction = -1
         self.__robot = None
         self.__input_point = None
         self.__output_point = None
@@ -62,12 +61,6 @@ class Cell():
 
     def setOutputPoint(self, output_point):
         self.__output_point = output_point
-
-    def getMailDirection(self):
-        return self.__mail_direction
-
-    def setMailDirection(self, mail_direction):
-        self.__mail_direction = mail_direction
 
     def getPointDirection(self):
         return self.__point_direction

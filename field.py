@@ -126,10 +126,6 @@ class Field():
     def getCellPointDirection(self, cell_row, cell_col):
         return self.__cells_list[cell_row][cell_col].getPointDirection()
 
-
-    def getCellMailDirection(self, cell_row, cell_col):
-        return self.__cells_list[cell_row][cell_col].getMailDirection()
-
     def setCellMailDirection(self, cell_row, cell_col, mail_direction):
         self.__cells_list[cell_row][cell_col].setMailDirection(mail_direction)
 
@@ -157,3 +153,6 @@ class Field():
 
     def newCellMailForInputPoint(self, cell_row, cell_col):
         self.__cells_list[cell_row][cell_col].newMailForInputPoint()
+
+    def getCellOutputPointMailDirection(self, cell_row, cell_col):
+        self.__cells_list[cell_row][cell_col].getOutputPointMailDirection()

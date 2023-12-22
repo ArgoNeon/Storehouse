@@ -11,7 +11,7 @@ class InputPoint():
         self.__mail_directions = range(number_of_output_points)
 
         if (self.__number_of_mails > 0):
-            mail_direction = rand.choices(self.__mail_directions)
+            mail_direction = rand.choices(self.__mail_directions, weights=[0.8, 0.15, 0.05])
             self.__current_mail = Mail(mail_direction[0])
         else:
             self.__current_mail = None
