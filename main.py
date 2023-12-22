@@ -307,9 +307,9 @@ class Model():
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     number_of_it = 1
-    number_of_mails = 100
+    number_of_mails = 10000
     optimal_robot_life_time = 7
-    optimal_cell_life_time = 400
+    optimal_cell_life_time = 2400
     tick_sum = 0
     tick_list = []
     metric_list = [] 
