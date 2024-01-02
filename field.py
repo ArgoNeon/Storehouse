@@ -5,6 +5,7 @@ from cell import Cell
 class Field():
     def __init__(self, field_file_name, life_time):
         self.__cell_life_time = life_time
+        
         field = csv_reader.read_field(field_file_name)
 
         max_row = len(field)

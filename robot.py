@@ -7,32 +7,33 @@ from cell import Cell
 
 class Robot():
     def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone, life_time):
-        self.__pheromone_life_time = life_time
-        self.__pheromone_value = 20.0
+        self.__pheromone_value      = 20.0
         self.__base_pheromone_value = 0.0
+        self.__pheromone_life_time  = life_time
 
-        self.__id = robot_id
-        self.__coordinates = Coordinates(robot_row, robot_col)
-        self.__direction = robot_direction
-        self.__new_direction = robot_direction
-        self.__new_coordinates = Coordinates(robot_row, robot_col)
-        self.__mail_directions = range(number_of_pheromone)
+        self.__id               = robot_id
+        self.__coordinates      = Coordinates(robot_row, robot_col)
+        self.__direction        = robot_direction
+        self.__new_direction    = robot_direction
+        self.__new_coordinates  = Coordinates(robot_row, robot_col)
+        self.__mail_directions  = range(number_of_pheromone)
 
-        self.__number_of_pheromone = number_of_pheromone
-        self.__current_pheromone = number_of_pheromone - 1
-        self.__current_pheromone_around = []
-        self.__current_cell_types_around = []
+        self.__number_of_pheromone  = number_of_pheromone
+        self.__current_pheromone    = number_of_pheromone - 1
+
+        self.__current_pheromone_around     = []
+        self.__current_cell_types_around    = []
 
         self.__mail = None 
         
-        self.__is_hold = 1
-        self.__is_rotate = 0
-        self.__is_wait = 0
-        self.__is_charge = 0
-        self.__is_done = 0
+        self.__is_hold      = 1
+        self.__is_rotate    = 0
+        self.__is_wait      = 0
+        self.__is_charge    = 0
+        self.__is_done      = 0
 
-        self.is_search_input = 0
-        self.is_search_output = 0
+        self.is_search_input    = 0
+        self.is_search_output   = 0
 
         self.__pheromone_list = []
         self.__cell_type_list = []

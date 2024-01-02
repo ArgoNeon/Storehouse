@@ -1,18 +1,19 @@
-import random as rand
+import distribution as dist
 from coordinates import Coordinates
 from mail import Mail
 
 class InputPoint():
-    def __init__(self, point_id, row, col, number_of_output_points, number_of_mails):
-        self.__id = point_id
-        self.__coordinates = Coordinates(row, col)
-        self.__current_mail = None
-        self.__number_of_mails = number_of_mails
-        self.__mail_directions = range(number_of_output_points)
+    def __init__(self, point_id, row, col, number_of_output_points, number_of_mails, mail_distribution):
+        self.__id                   = point_id
+        self.__coordinates          = Coordinates(row, col)
+        self.__current_mail         = None
+        self.__number_of_mails      = number_of_mails
+        self.__mail_directions      = range(number_of_output_points)
+        self.__mail_distribution    = mail_distribution
 
         if (self.__number_of_mails > 0):
-            mail_direction = rand.choices(self.__mail_directions, weights=[85, 15, 5])
-            self.__current_mail = Mail(mail_direction[0])
+            mail_direction = dist.rand_choice(self.__mail_directions, self.__mail_distribution)
+            self.__current_mail = Mail(mail_direction)
         else:
             self.__current_mail = None
 
@@ -33,15 +34,15 @@ class InputPoint():
 
     def newMail(self):
         if (self.__number_of_mails > 0):
-            mail_direction = rand.choices(self.__mail_directions)
-            self.__current_mail = Mail(mail_direction[0])
+            mail_direction = dist.rand_choice(self.__mail_directions, self.__mail_distribution)
+            self.__current_mail = Mail(mail_direction)
         else:
             self.__current_mail = None
 
 class Outputpoint():
     def __init__(self, mail_direction, row, col):
-        self.__coordinates = Coordinates(row, col)
-        self.__mail_direction = mail_direction
+        self.__coordinates              = Coordinates(row, col)
+        self.__mail_direction           = mail_direction
         self.__number_of_received_mails = 0
 
     def getCoordinates(self):

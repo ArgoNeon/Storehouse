@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 import math
 
 import csv_reader
+import distribution as dist
+
 from field import Field
 from robot import Robot
 from points import InputPoint, Outputpoint
 from mail import Mail
 
 class Model():
-    def __init__(self, field_file_name, number_of_mails, robot_life_time, cell_life_time):
+    def __init__(self, field_file_name, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
         log.basicConfig(level=log.INFO, filename="model.log", filemode="w", format="%(message)s")
 
         field_data = csv_reader.read_field(field_file_name)
@@ -52,7 +54,8 @@ class Model():
             input_point = InputPoint(i, input_points_data_list[i].getRow(),
                                         input_points_data_list[i].getCol(),
                                         self.field.getNumberOfOutputPoints(),
-                                        mail_distribution_for_input_points[i])
+                                        mail_distribution_for_input_points[i],
+                                        mail_distribution)
             self.field.setCellInputPoint(   input_points_data_list[i].getRow(),
                                             input_points_data_list[i].getCol(),
                                             input_point)
@@ -128,8 +131,6 @@ class Model():
 
         if (robot.sumCurrentPheromoneAround() == 0.0):
             robot_row, robot_col = robot.getCoordinates()
-            #self.event()
-            #log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(robot.getID()) + '-wait-' + str(robot_row) + '-'+ str(robot_col))
             robot.startWait()
 
             return robot_direction, robot_row, robot_col
@@ -165,7 +166,6 @@ class Model():
         self.field.cellSetRobot(current_row, current_col)
         self.field.cellRemoveRobot(old_row, old_col)
         self.field.cellRemoveReserved(new_row, new_col)
-        #self.robot heromone(robot)
 
         return current_row, current_col
 
@@ -193,14 +193,13 @@ class Model():
                     old_direction = irobot.getDirection()
                     new_direction = irobot.changeDirection()
                     self.event()
+                    #change direction
                     log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row) + '-' + str(irobot_col))
-                    #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
-
                 elif (not irobot.isHold()):
                     new_row, new_col = self.robotMove(irobot)
                     self.event()
+                    #move
                     log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-1-' + str(irobot_row) + '-' + str(irobot_col))
-                    #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                 else:
                     if (ipoint_type == 'i'):
                         irobot.changePheromoneListForInputPoint()
@@ -220,13 +219,13 @@ class Model():
                                         old_direction = irobot.getDirection()
                                         new_direction = irobot.changeDirection()
                                         self.event()
+                                        #change direction
                                         log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row)+ '-' +str(irobot_col))
-                                        #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
                                     elif ((new_row != current_row) or (new_col != current_col)):
                                         new_row, new_col = self.robotMove(irobot)
                                         self.event()
+                                        #move
                                         log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-1-' + str(irobot_row) + '-' + str(irobot_col))
-                                        #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                                     else:
                                         pass
                                 else:
@@ -235,8 +234,8 @@ class Model():
                                     self.mails_list.append(mail.getMailDirection())
                                     self.number_of_mails = self.number_of_mails - 1
                                     self.event()
+                                    #get mail
                                     log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-2-' + str(irobot_row) + '-'+ str(irobot_col) + '-'+ str(mail.getMailDirection()))
-                                    #log.info('Robot on ' + str(irobot_row) +  ' row,' + str(irobot_col) + ' get mail to ' + str(mail.getMailDirection()) + ' output point from input point')
                         else:
                             new_direction, new_row, new_col = self.robotChooseDirection(irobot)
                             current_direction = irobot.getDirection()
@@ -246,13 +245,13 @@ class Model():
                                 old_direction = irobot.getDirection()
                                 new_direction = irobot.changeDirection()
                                 self.event()
+                                #change direction
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row) + '-'+ str(irobot_col))
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
                             elif ((new_row != current_row) or (new_col != current_col)):
                                 new_row, new_col = self.robotMove(irobot)
                                 self.event()
+                                #move
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-1-' + str(irobot_row) + '-'+ str(irobot_col))
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                             else:
                                 pass
                     elif (ipoint_type == 'o'):
@@ -264,14 +263,14 @@ class Model():
                                 old_direction = irobot.getDirection()
                                 new_direction = irobot.changeDirection()
                                 self.event()
+                                #change direction
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row) + '-'+ str(irobot_col))  
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
                             else:
                                 mail = irobot.putMail()
                                 self.number_of_delivered_mails = self.number_of_delivered_mails + 1
                                 self.event()
+                                #put mail
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-3-' +  str(irobot_row) + '-'+ str(irobot_col) + '-'+ str(ipoint_mail_direction))   
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' put mail to ' + str(mail.getMailDirection()) + ' output point')
                                 self.field.receiveCellMailForOutputPoint(irobot_row, irobot_col, mail)
                         else:
                             new_direction, new_row, new_col = self.robotChooseDirection(irobot)
@@ -282,13 +281,13 @@ class Model():
                                 old_direction = irobot.getDirection()
                                 new_direction = irobot.changeDirection()
                                 self.event()
+                                #change direction
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row) + '-' + str(irobot_col))
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
                             elif ((new_row != current_row) or (new_col != current_col)):
                                 new_row, new_col = self.robotMove(irobot)
                                 self.event()
+                                #move
                                 log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-1-' + str(irobot_row) + '-' + str(irobot_col))
-                                #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                             else:
                                 pass
                     else:
@@ -300,29 +299,33 @@ class Model():
                             old_direction = irobot.getDirection()
                             new_direction = irobot.changeDirection()
                             self.event()
+                            #change direction
                             log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-0-' + str(irobot_row) + '-' + str(irobot_col))        
-                            #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col change direction from ' + str(old_direction) + ' to ' + str(new_direction))
                         elif ((new_row != current_row) or (new_col != current_col)):
                             new_row, new_col = self.robotMove(irobot)
                             self.event()
+                            #move
                             log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-1-' + str(irobot_row) + '-' + str(irobot_col))        
-                            #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                         else:
                             pass
-                        
+
         csv_reader.write_mails(self.mails_list)
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
-    number_of_it = 1
-    number_of_mails = 100
-    optimal_robot_life_time = 7
-    optimal_cell_life_time = 2400
-    tick_sum = 0
-    tick_list = []
+    number_of_it        = 1
+    number_of_mails     = 100
+
+    optimal_robot_life_time     = 7
+    optimal_cell_life_time      = 2400
+
+    tick_sum    = 0
+    tick_list   = []
     metric_list = [] 
+    
+    mail_distribution = [85, 15, 5]
 
     for i in range(number_of_it):
-        model = Model('field_b.csv', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
+        model = Model('field_b.csv', number_of_mails, mail_distribution, optimal_robot_life_time, optimal_cell_life_time)
         tick, number_of_robots, number_of_delivered_mails = model.run()
         tick_sum = tick_sum + tick
         tick_list.append(tick)
