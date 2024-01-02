@@ -3,6 +3,7 @@ import random as rand
 import matplotlib.pyplot as plt
 import math
 
+import csv
 import csv_reader
 import distribution as dist
 
@@ -13,7 +14,8 @@ from mail import Mail
 
 class Model():
     def __init__(self, field_file_name, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
-        log.basicConfig(level=log.INFO, filename="model.log", filemode="w", format="%(message)s")
+        model_file = open('model.csv', mode="w")
+        self.model_writer = csv.writer(model_file, delimiter = ";", lineterminator="\r")
 
         field_data = csv_reader.read_field(field_file_name)
 
@@ -73,34 +75,42 @@ class Model():
             self.output_points_list.append(output_point)
 
     def log_change_direction(self, robot):
-        log.info(   str(self.getEvent()) + '-' + 
-                    str(self.getTick()) + '-' + 
-                    str(robot.getID()) + '-0-' + 
-                    str(robot.getRow()) + '-' + 
-                    str(robot.getCol()))
+        row = [ str(self.getEvent()),
+                str(self.getTick()), 
+                str(robot.getID()), 
+                str(0), 
+                str(robot.getRow()), 
+                str(robot.getCol())]
+        self.model_writer.writerow(row)
 
     def log_move(self, robot):
-        log.info(   str(self.getEvent()) + '-' + 
-                    str(self.getTick()) + '-' + 
-                    str(robot.getID()) + '-1-' + 
-                    str(robot.getRow()) + '-' + 
-                    str(robot.getCol()))
+        row = [ str(self.getEvent()),
+                str(self.getTick()),
+                str(robot.getID()),
+                str(1),
+                str(robot.getRow()),
+                str(robot.getCol())]
+        self.model_writer.writerow(row)
 
     def log_get_mail(self, robot, mail):
-        log.info(   str(self.getEvent()) + '-' + 
-                    str(self.getTick()) + '-' + 
-                    str(robot.getID()) + '-2-' + 
-                    str(robot.getRow()) + '-'+ 
-                    str(robot.getCol()) + '-'+ 
-                    str(mail.getMailDirection()))
+        row = [ str(self.getEvent()),
+                str(self.getTick()),
+                str(robot.getID()),
+                str(2),
+                str(robot.getRow()),
+                str(robot.getCol()),
+                str(mail.getMailDirection())]
+        self.model_writer.writerow(row)
 
     def log_put_mail(self, robot, mail):
-        log.info(   str(self.getEvent()) + '-' + 
-                    str(self.getTick()) + '-' + 
-                    str(robot.getID()) + '-3-' +  
-                    str(robot.getRow()) + '-'+ 
-                    str(robot.getCol()) + '-'+ 
-                    str(mail.getMailDirection()))
+        row = [ str(self.getEvent()),
+                str(self.getTick()),
+                str(robot.getID()),
+                str(3),
+                str(robot.getRow()),
+                str(robot.getCol()),
+                str(mail.getMailDirection())]
+        self.model_writer.writerow(row)
 
     def getTick(self):
         return self.__timer

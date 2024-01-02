@@ -25,4 +25,3 @@ def rand_choice(range_list, weights):
             choice = range_list[i]
             break
     return choice
-    
