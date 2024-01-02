@@ -41,8 +41,11 @@ class Robot():
         for i in range(number_of_pheromone):
             self.__pheromone_list.append(0.0)
 
-    def wellDone(self):
-        self.__is_done = 1
+    def getRow(self):
+        return self.__coordinates.getRow()
+
+    def getCol(self):
+        return self.__coordinates.getCol()
 
     def isDone(self):
         return self.__is_done
