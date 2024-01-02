@@ -4,7 +4,6 @@ import math
 from coordinates import Coordinates
 from mail import Mail
 from cell import Cell
-from xlsx_reader import write_field
 
 class Robot():
     def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone, life_time):

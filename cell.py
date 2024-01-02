@@ -8,12 +8,13 @@ class Cell():
         self.__coordinates = Coordinates(cell_row, cell_col)
         self.__type = cell_type
         self.__point_direction = -1
-        self.__robot = None
-        self.__input_point = None
+
+        self.__robot        = None
+        self.__input_point  = None
         self.__output_point = None
 
-        self.__is_robot = 0
-        self.__is_reserved = 0
+        self.__is_robot     = 0
+        self.__is_reserved  = 0
 
         if (cell_type == 'i'):
             self.__point_direction = 2

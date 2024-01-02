@@ -3,7 +3,7 @@ import random as rand
 import matplotlib.pyplot as plt
 import math
 
-import xlsx_reader
+import csv_reader
 from field import Field
 from robot import Robot
 from points import InputPoint, Outputpoint
@@ -12,23 +12,27 @@ from mail import Mail
 class Model():
     def __init__(self, field_file_name, number_of_mails, robot_life_time, cell_life_time):
         log.basicConfig(level=log.INFO, filename="model.log", filemode="w", format="%(message)s")
-        
-        #log.info('Start reading data from field file.')
-        field_data = xlsx_reader.read_field(field_file_name)
-        #log.info('Field file has been read.')
 
-        self.start_number_of_mails = number_of_mails
-        self.number_of_mails = number_of_mails
-        self.number_of_delivered_mails = 0
-        self.__timer = 0
-        self.__event_timer = 0
+        field_data = csv_reader.read_field(field_file_name)
+
+        self.start_number_of_mails      = number_of_mails
+        self.number_of_mails            = number_of_mails
+        self.number_of_delivered_mails  = 0
+
+        self.__timer        = 0
+        self.__event_timer  = 0
+
         self.field = Field(field_file_name, cell_life_time)
 
+        self.mails_list  = []
         self.robots_list = []
         robots_data_list = self.field.getRobotsDataList()
 
         for i in range(self.field.getNumberOfRobots()):
-            robot = Robot(i, robots_data_list[i].getRow(), robots_data_list[i].getCol(), 0, self.field.getNumberOfPheromones(), robot_life_time)
+            robot = Robot(i,    robots_data_list[i].getRow(), 
+                                robots_data_list[i].getCol(), 
+                                0, self.field.getNumberOfPheromones(), 
+                                robot_life_time)
             self.robots_list.append(robot)
 
         self.input_points_list = []
@@ -228,6 +232,7 @@ class Model():
                                 else:
                                     self.field.newCellMailForInputPoint(irobot_row, irobot_col)
                                     irobot.receiveMail(mail)
+                                    self.mails_list.append(mail.getMailDirection())
                                     self.number_of_mails = self.number_of_mails - 1
                                     self.event()
                                     log.info(str(self.getEvent()) + '-' + str(self.getTick()) + '-' + str(irobot.getID()) + '-2-' + str(irobot_row) + '-'+ str(irobot_col) + '-'+ str(mail.getMailDirection()))
@@ -304,7 +309,8 @@ class Model():
                             #log.info('Robot on ' + str(irobot_row) + ' row,' + str(irobot_col) + ' col move to ' + str(new_row) + ' row,' + str(new_col) + ' col')
                         else:
                             pass
-
+                        
+        csv_reader.write_mails(self.mails_list)
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     number_of_it = 1
@@ -316,14 +322,13 @@ if __name__ == "__main__":
     metric_list = [] 
 
     for i in range(number_of_it):
-        model = Model('field.xlsx', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
+        model = Model('field_b.csv', number_of_mails, optimal_robot_life_time, optimal_cell_life_time)
         tick, number_of_robots, number_of_delivered_mails = model.run()
         tick_sum = tick_sum + tick
         tick_list.append(tick)
         metric = tick * number_of_robots / number_of_delivered_mails
         metric_list.append(metric)
 
-    #xlsx_reader.write_field('current_field.xlsx', model.field.getCellsList())
     medium_tick = tick_sum / number_of_it
     metric_value = medium_tick * number_of_robots / number_of_delivered_mails
 

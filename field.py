@@ -1,11 +1,11 @@
-import xlsx_reader as rd
+import csv_reader
 from coordinates import Coordinates
 from cell import Cell
 
 class Field():
     def __init__(self, field_file_name, life_time):
         self.__cell_life_time = life_time
-        field = rd.read_field(field_file_name)
+        field = csv_reader.read_field(field_file_name)
 
         max_row = len(field)
         max_col = 0
@@ -21,13 +21,13 @@ class Field():
 
         self.__cells_list = []
 
-        n_robots = 0
-        n_input_points = 0
+        n_robots        = 0
+        n_input_points  = 0
         n_output_points = 0
 
-        self.__robots_data_list = []
-        self.__input_points_data_list = []
-        self.__output_points_data_list = []
+        self.__robots_data_list         = []
+        self.__input_points_data_list   = []
+        self.__output_points_data_list  = []
 
         for i in range(max_row):
             for j in range(max_col):
@@ -43,10 +43,10 @@ class Field():
                     n_output_points = n_output_points + 1
                     self.__output_points_data_list.append(Coordinates(i, j))
 
-        self.__number_of_robots = n_robots
-        self.__number_of_input_points = n_input_points
-        self.__number_of_output_points = n_output_points
-        self.__number_of_pheromones = n_output_points + 1
+        self.__number_of_robots         = n_robots
+        self.__number_of_input_points   = n_input_points
+        self.__number_of_output_points  = n_output_points
+        self.__number_of_pheromones     = n_output_points + 1
 
         for i in range(max_row):
             row = []
