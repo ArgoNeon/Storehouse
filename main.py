@@ -1,4 +1,3 @@
-import logging as log
 import random as rand
 import matplotlib.pyplot as plt
 import math
@@ -340,16 +339,16 @@ class Model():
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     number_of_it        = 1
-    number_of_mails     = 100
+    number_of_mails     = 10000
 
     optimal_robot_life_time     = 7
-    optimal_cell_life_time      = 2400
+    optimal_cell_life_time      = 3000
 
     tick_sum    = 0
     tick_list   = []
     metric_list = [] 
 
-    mail_distribution = [85, 15, 5]
+    mail_distribution = [85, 10, 5]
 
     for i in range(number_of_it):
         model = Model('field_b.csv', number_of_mails, mail_distribution, optimal_robot_life_time, optimal_cell_life_time)
