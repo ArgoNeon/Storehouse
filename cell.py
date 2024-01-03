@@ -7,6 +7,7 @@ class Cell():
         self.__type                 = cell_type
         self.__point_direction      = -1
         self.__pheromone_life_time  = life_time
+        self.__max_pheromone_in_cell = 400000.0
 
         self.__coordinates = Coordinates(cell_row, cell_col)
 
@@ -112,4 +113,7 @@ class Cell():
                 self.__pheromone_list[i] = (self.__pheromone_list[i] - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
 
     def addPheromone(self, pheromone_id, pheromone_data):
-        self.__pheromone_list[pheromone_id] = self.__pheromone_list[pheromone_id] + pheromone_data
+        if (self.__pheromone_list[pheromone_id] + pheromone_data < self.__max_pheromone_in_cell):
+            self.__pheromone_list[pheromone_id] = self.__pheromone_list[pheromone_id] + pheromone_data
+        else:
+            self.__pheromone_list[pheromone_id] = self.__max_pheromone_in_cell

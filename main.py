@@ -145,19 +145,34 @@ class Model():
         robot_direction = robot.getDirection()
         current_pheromone = robot.getCurrentPheromone()
         opposite_robot_direction  = (robot_direction + 2) % 4
+        opposite_direction_attraction = 0.01
+        current_direction_attraction = 1.0
 
         if (opposite_robot_direction == 0):
             pheromone_value = self.field.getCellPheromoneValue(robot_row - 1, robot_col, current_pheromone)
-            robot.updateCurrentPheromoneAround(0, 0.01 * pheromone_value)
+            robot.updateCurrentPheromoneAround(0, opposite_direction_attraction * pheromone_value)
         if (opposite_robot_direction == 1):
             pheromone_value = self.field.getCellPheromoneValue(robot_row, robot_col + 1, current_pheromone)
-            robot.updateCurrentPheromoneAround(1, 0.01 * pheromone_value)
+            robot.updateCurrentPheromoneAround(1, opposite_direction_attraction * pheromone_value)
         if (opposite_robot_direction == 2):
             pheromone_value = self.field.getCellPheromoneValue(robot_row + 1, robot_col, current_pheromone)
-            robot.updateCurrentPheromoneAround(2, 0.01 * pheromone_value)
+            robot.updateCurrentPheromoneAround(2, opposite_direction_attraction * pheromone_value)
         if (opposite_robot_direction == 3):
             pheromone_value = self.field.getCellPheromoneValue(robot_row, robot_col - 1, current_pheromone)
-            robot.updateCurrentPheromoneAround(3, 0.01 * pheromone_value)
+            robot.updateCurrentPheromoneAround(3, opposite_direction_attraction * pheromone_value)
+
+        if (robot_direction == 0):
+            pheromone_value = self.field.getCellPheromoneValue(robot_row - 1, robot_col, current_pheromone)
+            robot.updateCurrentPheromoneAround(0, current_direction_attraction * pheromone_value)
+        if (robot_direction == 1):
+            pheromone_value = self.field.getCellPheromoneValue(robot_row, robot_col + 1, current_pheromone)
+            robot.updateCurrentPheromoneAround(1, current_direction_attraction * pheromone_value)
+        if (robot_direction == 2):
+            pheromone_value = self.field.getCellPheromoneValue(robot_row + 1, robot_col, current_pheromone)
+            robot.updateCurrentPheromoneAround(2, current_direction_attraction * pheromone_value)
+        if (robot_direction == 3):
+            pheromone_value = self.field.getCellPheromoneValue(robot_row, robot_col - 1, current_pheromone)
+            robot.updateCurrentPheromoneAround(3, current_direction_attraction * pheromone_value)
 
         if (self.field.cellIsReserved(robot_row - 1, robot_col)) or (self.field.cellIsRobot(robot_row - 1, robot_col)):
             robot.updateCurrentPheromoneAround(0, 0.0)
@@ -188,11 +203,16 @@ class Model():
         return new_direction, new_row, new_col
 
     def robotAddPheromone(self, robot):
-        row, col = robot.getCoordinates()
-        current_pheromone = robot.getCurrentPheromone()
+        row, col                    = robot.getCoordinates()
+        #current_pheromone           = robot.getCurrentPheromone()
+        #previous_pheromone          = robot.getPreviousPheromone()
+        #current_pheromone_value     = robot.getCurrentPheromoneValue()
+        #previous_pheromone_value    = robot.getPreviousPheromoneValue()
         for i in range(robot.getNumberOfPheromone()):
             ipheromone_value = robot.getPheromoneValue(i)
             self.field.cellAddPheromone(row, col, i, ipheromone_value)
+        #self.field.cellAddPheromone(row, col, current_pheromone, current_pheromone_value)
+        #self.field.cellAddPheromone(row, col, previous_pheromone, previous_pheromone_value)
 
     def robotMove(self, robot):
         old_row, old_col = robot.getCoordinates()
@@ -217,7 +237,7 @@ class Model():
                 irobot_row, irobot_col = irobot.getCoordinates()
                 irobot_direction = irobot.getDirection()
                 irobot.updatePheromoneList()
-                irobot.updateCurrentPheromon()
+                #irobot.updateCurrentPheromon()
 
                 self.robotCheckCellTypesAround(irobot)
                 self.robotCheckPheromonesAround(irobot) 
@@ -339,7 +359,7 @@ class Model():
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails                        
 if __name__ == "__main__":
     number_of_it        = 1
-    number_of_mails     = 10000
+    number_of_mails     = 1000
 
     optimal_robot_life_time     = 7
     optimal_cell_life_time      = 3000
@@ -348,7 +368,7 @@ if __name__ == "__main__":
     tick_list   = []
     metric_list = [] 
 
-    mail_distribution = [85, 10, 5]
+    mail_distribution = [33, 33, 33]
 
     for i in range(number_of_it):
         model = Model('field_b.csv', number_of_mails, mail_distribution, optimal_robot_life_time, optimal_cell_life_time)

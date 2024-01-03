@@ -20,6 +20,7 @@ class Robot():
 
         self.__number_of_pheromone  = number_of_pheromone
         self.__current_pheromone    = number_of_pheromone - 1
+        self.__previous_pheromone   = number_of_pheromone - 1 
 
         self.__current_pheromone_around     = []
         self.__current_cell_types_around    = []
@@ -39,7 +40,7 @@ class Robot():
         self.__cell_type_list = []
 
         for i in range(number_of_pheromone):
-            self.__pheromone_list.append(0.0)
+            self.__pheromone_list.append(self.__base_pheromone_value)
 
     def getRow(self):
         return self.__coordinates.getRow()
@@ -64,6 +65,9 @@ class Robot():
 
     def getCurrentPheromoneValue(self):
         return self.__pheromone_list[self.__current_pheromone]
+
+    def getPreviousPheromoneValue(self):
+        return self.__pheromone_list[self.__previous_pheromone]
 
     def getPheromoneValue(self, pheromone_id):
         return self.__pheromone_list[pheromone_id]
@@ -150,6 +154,9 @@ class Robot():
     def getCurrentPheromone(self):
         return self.__current_pheromone
 
+    def getPreviousPheromone(self):
+        return self.__previous_pheromone
+
     def getNumberOfPheromone(self):
         return self.__number_of_pheromone
 
@@ -163,13 +170,25 @@ class Robot():
         self.__mail = mail
         self.__pheromone_list[self.__current_pheromone] = self.__pheromone_value
 
+        if (self.__mail != None):
+            self.__previous_pheromone = self.__current_pheromone
+            self.__current_pheromone = self.__mail.getMailDirection()
+        else:
+            self.__previous_pheromone = self.__current_pheromone
+            self.__current_pheromone = self.__number_of_pheromone - 1
+
     def getMail(self):
         return self.__mail
 
     def putMail(self):
         mail = self.__mail
         self.__mail = None
+
         self.__pheromone_list[self.__current_pheromone] = self.__pheromone_value
+
+        self.__previous_pheromone = self.__current_pheromone
+        self.__current_pheromone = self.__number_of_pheromone - 1
+
         return mail
 
     def getMailDirection(self):
@@ -247,7 +266,7 @@ class Robot():
 
     def updatePheromoneList(self):
         for i in range(len(self.__pheromone_list)):
-            self.__pheromone_list[i] = self.__pheromone_list[i] * math.exp(- 1.0 / self.__pheromone_life_time)
+            self.__pheromone_list[i] = (self.__pheromone_list[i] - self.__base_pheromone_value) * math.exp(- 1.0 / self.__pheromone_life_time) + self.__base_pheromone_value
 
     def changePheromoneListForOutputPoint(self, point_id):
         self.__pheromone_list[point_id] = self.__pheromone_value
