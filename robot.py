@@ -7,7 +7,7 @@ from cell import Cell
 
 class Robot():
     def __init__(self, robot_id, robot_row, robot_col, robot_direction, number_of_pheromone, life_time):
-        self.__pheromone_value      = 20.0
+        self.__pheromone_value      = 1.0
         self.__base_pheromone_value = 0.0
         self.__pheromone_life_time  = life_time
 

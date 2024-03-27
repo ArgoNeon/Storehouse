@@ -1,4 +1,5 @@
 import csv
+import math
 import matplotlib.pyplot as plt
 
 def save_mails(log_file_name, mail_file_name):
@@ -57,42 +58,74 @@ def create_graphic(delivery_time_file_name):
 
     count                   = [0, 0, 0]
     sum_delivery_time       = [0, 0, 0]
+    sum_square              = [0, 0, 0]
+
     medium_delivery_time    = [[], [], []]
     time                    = [[], [], []]
     delivery_time           = [[], [], []]
+
+    error                            = [[], [], []]
+    time_for_error                   = [[], [], []]
+    medium_delivery_time_for_error   = [[], [], []]
 
     for irow in file_reader:
         count[int(irow[1])]             = count[int(irow[1])] + 1
         sum_delivery_time[int(irow[1])] = sum_delivery_time[int(irow[1])] + int(irow[3])
 
-        medium_delivery_time[int(irow[1])].append(sum_delivery_time[int(irow[1])] / count[int(irow[1])])
+        medium_time = sum_delivery_time[int(irow[1])] / count[int(irow[1])]
+        sum_square[int(irow[1])] = sum_square[int(irow[1])] + (medium_time - int(irow[3]))**2
+        error_time = math.sqrt(sum_square[int(irow[1])] / count[int(irow[1])])
+
         delivery_time[int(irow[1])].append(int(irow[3]))
+        medium_delivery_time[int(irow[1])].append(medium_time)
         time[int(irow[1])].append(int(irow[0]))
 
-    #print(count, medium_delivery_time)
+        if (int(irow[1]) == 0):
+            if (count[int(irow[1])] % 1200 == 0):
+                error[int(irow[1])].append(error_time)
+                time_for_error[int(irow[1])].append(int(irow[0]))
+                medium_delivery_time_for_error[int(irow[1])].append(medium_time)
+        if (int(irow[1]) == 1):
+            if (count[int(irow[1])] % 300 == 0):
+                error[int(irow[1])].append(error_time)
+                time_for_error[int(irow[1])].append(int(irow[0]))
+                medium_delivery_time_for_error[int(irow[1])].append(medium_time)
+        if (int(irow[1]) == 2):
+            if (count[int(irow[1])] % 100 == 0):
+                error[int(irow[1])].append(error_time)
+                time_for_error[int(irow[1])].append(int(irow[0]))
+                medium_delivery_time_for_error[int(irow[1])].append(medium_time)
 
     plt.plot(time[0], delivery_time[0], color='green')
     plt.plot(time[1], delivery_time[1], color='blue')
     plt.plot(time[2], delivery_time[2], color='red')
     plt.xlabel('t')
-    plt.ylabel('T_del')
+    plt.ylabel('T_delivery')
 
     plt.grid()
     plt.show()
 
-    plt.figure(figsize=[16, 9])
+    #plt.figure(figsize=[16, 9])
+    fig, ax = plt.subplots(figsize=[16, 9])
     
     plt.plot(time[0], medium_delivery_time[0], color='green')
     plt.plot(time[1], medium_delivery_time[1], color='blue')
     plt.plot(time[2], medium_delivery_time[2], color='red')
+
+    ax.errorbar(time_for_error[0], medium_delivery_time_for_error[0], yerr=error[0], color='green', capsize=6)
+    ax.errorbar(time_for_error[1], medium_delivery_time_for_error[1], yerr=error[1], color='blue', capsize=6)
+    ax.errorbar(time_for_error[2], medium_delivery_time_for_error[2], yerr=error[2], color='red', capsize=6)
+
+    ax.legend(['Direction 0', 'Direction 1', 'Direction 2'])
+
     plt.xlabel('t')
-    plt.ylabel('T_med')
+    plt.ylabel('T_medium')
 
     plt.grid()
     plt.show()
 
 if __name__ == "__main__":
-    number_of_robots = 8
+    number_of_robots = 20
     save_mails('model.csv', 'get_put.csv')
     save_delivery_time('get_put.csv', 'delivery_time.csv', number_of_robots)
     create_graphic('delivery_time.csv')

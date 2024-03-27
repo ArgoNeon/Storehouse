@@ -4,10 +4,13 @@ from points import InputPoint, Outputpoint
 
 class Cell():
     def __init__(self, cell_row, cell_col, cell_type, number_of_pheromone, life_time):
+        self.__row = cell_row
+        self.__col = cell_col
         self.__type                 = cell_type
         self.__point_direction      = -1
         self.__pheromone_life_time  = life_time
-        self.__max_pheromone_in_cell = 400000.0
+        self.__max_pheromone_in_cell = 100.0
+        self.__base_pheromone_in_cell = 0.1
 
         self.__coordinates = Coordinates(cell_row, cell_col)
 
@@ -36,7 +39,7 @@ class Cell():
 
         if (cell_type != 'b'):
             for i in range(number_of_pheromone):
-                self.__pheromone_list.append(1.0)
+                self.__pheromone_list.append(self.__base_pheromone_in_cell)
         else:
             for i in range(number_of_pheromone):
                 self.__pheromone_list.append(0.0)
@@ -110,7 +113,7 @@ class Cell():
     def updatePheromoneList(self):
         for i in range(len(self.__pheromone_list)):
             if (self.__type != 'b'):
-                self.__pheromone_list[i] = (self.__pheromone_list[i] - 1.0) * math.exp(- 1.0 / self.__pheromone_life_time) + 1.0
+                self.__pheromone_list[i] = (self.__pheromone_list[i] - self.__base_pheromone_in_cell) * math.exp(- 1.0 / self.__pheromone_life_time) + self.__base_pheromone_in_cell
 
     def addPheromone(self, pheromone_id, pheromone_data):
         if (self.__pheromone_list[pheromone_id] + pheromone_data < self.__max_pheromone_in_cell):
