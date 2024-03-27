@@ -28,7 +28,7 @@ def write_field(field_file_name, field_data):
             file_writer.writerow(row)
 
 def write_mails(mails_list):
-    with open('mails.csv', mode="w") as mails_file:
+    with open('data/mails.csv', mode="w") as mails_file:
         file_writer = csv.writer(mails_file, delimiter = ";", lineterminator="\r")
         for mail in mails_list:
             file_writer.writerow(str(mail))

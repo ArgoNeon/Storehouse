@@ -16,7 +16,7 @@ from cell import Cell
 
 class Model():
     def __init__(self, field_file_name, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
-        model_file = open('model.csv', mode="w")
+        model_file = open('data/model.csv', mode="w")
         self.model_writer = csv.writer(model_file, delimiter = ";", lineterminator="\r")
 
         field_data = csv_reader.read_field(field_file_name)
@@ -324,7 +324,7 @@ if __name__ == "__main__":
     mail_distribution_3_b = [85, 10, 5]
 
     for i in range(number_of_it):
-        model = Model('field_b_12.csv', number_of_mails, mail_distribution_3_a, optimal_robot_life_time, optimal_cell_life_time)
+        model = Model('field/field_b_12.csv', number_of_mails, mail_distribution_3_a, optimal_robot_life_time, optimal_cell_life_time)
         tick, number_of_robots, number_of_delivered_mails, field = model.run()
         tick_sum = tick_sum + tick
         tick_list.append(tick)
