@@ -26,21 +26,16 @@ class Field():
         n_input_points  = 0
         n_output_points = 0
 
-        self.__robots_data_list         = []
         self.__input_points_data_list   = []
         self.__output_points_data_list  = []
 
         for i in range(max_row):
             for j in range(max_col):
-                if (field[i][j] == 'r'):
-                    n_robots = n_robots + 1
-                    self.__robots_data_list.append(Coordinates(i, j))
-
-                if (field[i][j] == 'i'):
+                if (field[i][j] == 'T'):
                     n_input_points = n_input_points + 1
                     self.__input_points_data_list.append(Coordinates(i, j))
 
-                if (field[i][j] == 'o'):
+                if (field[i][j] == 'Y'):
                     n_output_points = n_output_points + 1
                     self.__output_points_data_list.append(Coordinates(i, j))
 

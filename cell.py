@@ -21,23 +21,15 @@ class Cell():
         self.__is_robot     = 0
         self.__is_reserved  = 0
 
-        if (cell_type == 'i'):
+        if (cell_type == 'T'):
             self.__point_direction = 2
 
-        if (cell_type == 'o'):
+        if (cell_type == 'Y'):
             self.__point_direction = 0
-
-        if (cell_type == 'r'):  
-            self.__is_robot = 1 
-            self.__type = 'g'
-
-        if (cell_type == 'res'):  
-            self.__is_reserved = 1 
-            self.__type = 'g'
 
         self.__pheromone_list = []
 
-        if (cell_type != 'b'):
+        if (cell_type != 'R'):
             for i in range(number_of_pheromone):
                 self.__pheromone_list.append(self.__base_pheromone_in_cell)
         else:
@@ -112,7 +104,7 @@ class Cell():
 
     def updatePheromoneList(self):
         for i in range(len(self.__pheromone_list)):
-            if (self.__type != 'b'):
+            if (self.__type != 'R'):
                 self.__pheromone_list[i] = (self.__pheromone_list[i] - self.__base_pheromone_in_cell) * math.exp(- 1.0 / self.__pheromone_life_time) + self.__base_pheromone_in_cell
 
     def addPheromone(self, pheromone_id, pheromone_data):

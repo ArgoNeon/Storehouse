@@ -10,12 +10,13 @@ import distribution as dist
 from heatmap import save_fig 
 from field import Field
 from robot import Robot
+from coordinates import Coordinates
 from points import InputPoint, Outputpoint
 from mail import Mail
 from cell import Cell
 
 class Model():
-    def __init__(self, field_file_name, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
+    def __init__(self, field_file_name, number_of_robots, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
         model_file = open('data/model.csv', mode="w")
         self.model_writer = csv.writer(model_file, delimiter = ";", lineterminator="\r")
 
@@ -32,9 +33,20 @@ class Model():
 
         self.mails_list  = []
         self.robots_list = []
-        robots_data_list = self.field.getRobotsDataList()
+        robots_data_list = []
 
-        for i in range(self.field.getNumberOfRobots()):
+        nrobots = number_of_robots
+
+        for i in range(self.field.getMaxRow()):
+            row = []
+            for j in range(self.field.getMaxCol()):
+                cell_type = self.field.getCellType(i, j)
+                if ((cell_type == 'G') and (nrobots > 0 )):
+                    nrobots = nrobots - 1
+                    self.field.cellSetRobot(i, j)
+                    robots_data_list.append(Coordinates(i, j))
+
+        for i in range(number_of_robots):
             robot = Robot(i,    robots_data_list[i].getRow(), 
                                 robots_data_list[i].getCol(), 
                                 0, self.field.getNumberOfPheromones(), 
@@ -81,8 +93,8 @@ class Model():
                 str(self.getTick()), 
                 str(robot.getID()), 
                 str(0), 
-                str(robot.getRow()), 
-                str(robot.getCol())]
+                str(robot.getCol()),
+                str(robot.getRow())]
         self.model_writer.writerow(row)
 
     def log_move(self, robot):
@@ -90,8 +102,10 @@ class Model():
                 str(self.getTick()),
                 str(robot.getID()),
                 str(1),
-                str(robot.getRow()),
-                str(robot.getCol())]
+                str(robot.getOldCol()),
+                str(robot.getOldRow()),
+                str(robot.getCol()),
+                str(robot.getRow())]
         self.model_writer.writerow(row)
 
     def log_get_mail(self, robot, mail):
@@ -99,8 +113,8 @@ class Model():
                 str(self.getTick()),
                 str(robot.getID()),
                 str(2),
-                str(robot.getRow()),
                 str(robot.getCol()),
+                str(robot.getRow()),
                 str(mail.getMailDirection())]
         self.model_writer.writerow(row)
 
@@ -109,9 +123,18 @@ class Model():
                 str(self.getTick()),
                 str(robot.getID()),
                 str(3),
-                str(robot.getRow()),
                 str(robot.getCol()),
+                str(robot.getRow()),
                 str(mail.getMailDirection())]
+        self.model_writer.writerow(row)
+
+    def log_wait(self, robot):
+        row = [ str(self.getEvent()),
+                str(self.getTick()),
+                str(robot.getID()),
+                str(4),
+                str(robot.getCol()),
+                str(robot.getRow())]
         self.model_writer.writerow(row)
 
     def getTick(self):
@@ -189,6 +212,7 @@ class Model():
         if (robot.sumCurrentPheromoneAround() == 0.0):
             robot_row, robot_col = robot.getCoordinates()
             robot.startWait()
+            self.log_wait(robot)
 
             return robot_direction, robot_row, robot_col
         else:
@@ -247,14 +271,14 @@ class Model():
                 ipoint_type = self.field.getCellType(irobot_row, irobot_col) 
                 ipoint_direction = self.field.getCellPointDirection(irobot_row, irobot_col)
 
-                if (ipoint_type == 'g'):
+                if (ipoint_type == 'G'):
                     new_direction, new_row, new_col = self.robotChooseDirection(irobot)
                     current_row, current_col = irobot.getCoordinates()
       
                     if ((new_row != current_row) or (new_col != current_col)):
                         new_row, new_col = self.robotMove(irobot)      
                 
-                elif (ipoint_type == 'i'):
+                elif (ipoint_type == 'T'):
                     if (irobot_direction != ipoint_direction):
                         irobot.setNewDirection(ipoint_direction)
                         irobot.setDirection(ipoint_direction)
@@ -285,7 +309,7 @@ class Model():
                         if ((new_row != current_row) or (new_col != current_col)):
                             new_row, new_col = self.robotMove(irobot)
 
-                elif (ipoint_type == 'o'):
+                elif (ipoint_type == 'Y'):
                     ipoint_mail_direction = self.field.getCellMailDirectionForOutputPoint(irobot_row, irobot_col)
                     irobot.changePheromoneListForOutputPoint(ipoint_mail_direction)
                     if (irobot.isMail() and (irobot.getMailDirection() == ipoint_mail_direction)):
@@ -310,7 +334,8 @@ class Model():
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails, self.field                       
 if __name__ == "__main__":
     number_of_it        = 1
-    number_of_mails     = 700
+    number_of_robots  = 30
+    number_of_mails     = 10000
 
     optimal_robot_life_time     = 6.0
     optimal_cell_life_time      = 800
@@ -324,7 +349,7 @@ if __name__ == "__main__":
     mail_distribution_3_b = [85, 10, 5]
 
     for i in range(number_of_it):
-        model = Model('field/field_b_12.csv', number_of_mails, mail_distribution_3_a, optimal_robot_life_time, optimal_cell_life_time)
+        model = Model('field/field_b.csv', number_of_robots, number_of_mails, mail_distribution_3_a, optimal_robot_life_time, optimal_cell_life_time)
         tick, number_of_robots, number_of_delivered_mails, field = model.run()
         tick_sum = tick_sum + tick
         tick_list.append(tick)

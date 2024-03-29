@@ -13,6 +13,7 @@ class Robot():
 
         self.__id               = robot_id
         self.__coordinates      = Coordinates(robot_row, robot_col)
+        self.__old_coordinates  = Coordinates(robot_row, robot_col)
         self.__direction        = robot_direction
         self.__new_direction    = robot_direction
         self.__new_coordinates  = Coordinates(robot_row, robot_col)
@@ -47,6 +48,12 @@ class Robot():
 
     def getCol(self):
         return self.__coordinates.getCol()
+
+    def getOldRow(self):
+        return self.__old_coordinates.getRow()
+
+    def getOldCol(self):
+        return self.__old_coordinates.getCol()
 
     def isDone(self):
         return self.__is_done
@@ -200,6 +207,9 @@ class Robot():
     def getCoordinates(self):
         return self.__coordinates.getCoordinates()
 
+    def getOldCoordinates(self):
+        return self.__old_coordinates.getCoordinates()
+
     def getNewCoordinates(self):
         return self.__new_coordinates.getCoordinates()
 
@@ -221,6 +231,9 @@ class Robot():
         pass
 
     def Move(self):
+        old_row, old_col = self.__coordinates.getCoordinates()
+        self.setOldCoordinates(old_row, old_col)
+
         self.stopHold()
         if (self.__direction == 0):
             self.__coordinates.setCoordinates(self.__coordinates.getRow() - 1, self.__coordinates.getCol())
@@ -236,6 +249,9 @@ class Robot():
 
     def setCoordinates(self, robot_row, robot_col):
         self.__coordinates.setCoordinates(robot_row, robot_col)
+
+    def setOldCoordinates(self, robot_row, robot_col):
+        self.__old_coordinates.setCoordinates(robot_row, robot_col)
 
     def setNewCoordinates(self, robot_row, robot_col):
         self.__new_coordinates.setCoordinates(robot_row, robot_col)
