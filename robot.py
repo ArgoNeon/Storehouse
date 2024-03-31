@@ -267,15 +267,17 @@ class Robot():
         self.__is_rotate = 1
 
     def changeDirection(self):
-        if (((self.__new_direction - self.__direction) % 4) < 3):
-            self.RotateRight()
-        else:
-            self.RotateLeft()
+        rotation = 0
 
-        if (not self.checkRotate()):
-            self.stopRotate()
+        if (self.__new_direction != self.__direction):
+            if (((self.__new_direction - self.__direction) % 4) < 3):
+                rotation = 2
+                self.RotateRight()
+            else:
+                rotation = 1
+                self.RotateLeft()
 
-        return self.__direction
+        return rotation
     
     def getPheromoneList(self):
         return self.__pheromone_list    
