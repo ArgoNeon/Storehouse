@@ -21,15 +21,15 @@ def write_field(field_file_name, field_data):
             for icell in irow:
                 cell_type = icell.getType()
                 if (icell.isReserved()):
-                    cell_type = 'res'
+                    cell_type = 'RES'
                 if (icell.isRobot()):
-                    cell_type = 'r'
+                    cell_type = 'ROB'
                 row.append(cell_type)
             file_writer.writerow(row)
 
 def write_mails(mails_list):
-    with open('data/mails.csv', mode="w") as mails_file:
-        file_writer = csv.writer(mails_file, delimiter = ";", lineterminator="\r")
+    with open('data/mails.txt', mode="w") as mails_file:
+        file_writer = csv.writer(mails_file, delimiter = " ", lineterminator="\r")
         for mail in mails_list:
             file_writer.writerow(str(mail))
 
