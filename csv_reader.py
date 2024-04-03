@@ -27,12 +27,6 @@ def write_field(field_file_name, field_data):
                 row.append(cell_type)
             file_writer.writerow(row)
 
-def write_mails(mails_list):
-    with open('data/mails.txt', mode="w") as mails_file:
-        file_writer = csv.writer(mails_file, delimiter = " ", lineterminator="\r")
-        for mail in mails_list:
-            file_writer.writerow(str(mail))
-
 def read_pheromone_map(pheromone_file_0, pheromone_file_1, field):
     pheromone_map_0 = open(pheromone_file_0, mode="w")
     file_writer_0 = csv.writer(pheromone_map_0, delimiter = ";", lineterminator="\r")

@@ -16,8 +16,9 @@ from mail import Mail
 from cell import Cell
 
 class Model():
-    def __init__(self, field_file_name, number_of_robots, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
-        model_file = open('data/model.txt', mode="w")
+    def __init__(self, field_file_name, data_folder, number_of_robots, number_of_mails, mail_distribution, robot_life_time, cell_life_time):
+        file_name = data_folder + 'model_for_' + str(number_of_robots) + '_robots.txt'
+        model_file = open(file_name, mode="w")
         self.model_writer = csv.writer(model_file, delimiter = " ", lineterminator="\r")
 
         field_data = csv_reader.read_field(field_file_name)
@@ -362,5 +363,4 @@ class Model():
                         if ((new_row != current_row) or (new_col != current_col)):
                             new_row, new_col = self.robotMove(irobot)
 
-        csv_reader.write_mails(self.mails_list)
         return self.getTick(), len(self.robots_list), self.number_of_delivered_mails, self.field
